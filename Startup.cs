@@ -28,6 +28,7 @@ namespace WishAPI
         {
             services.AddControllers();
             services.AddScoped<IWishRepository, MockWishRepository>();
+            services.AddScoped<IUserRepository, MockUserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
