@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WishAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace WishAPI
 {
@@ -26,8 +27,11 @@ namespace WishAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<WishContext>(opt => opt.UseSqlServer
+                (Configuration.GetConnectionString("WishConnection")));
             services.AddControllers();
             services.AddScoped<IWishRepository, MockWishRepository>();
+            services.AddScoped<IUserRepository, MockUserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
