@@ -27,14 +27,13 @@ namespace WishAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Connection string for local
-            var connectionString = Configuration.GetConnectionString("WishConnection");
+            var IsDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
-            // Connection string for Heroku deployment
-            //var connectionString = GetHerokuConnectionString();
+            var connectionString = IsDevelopment ? Configuration.GetConnectionString("WishConnection") : GetHerokuConnectionString();
+
 
             services.AddEntityFrameworkNpgsql().AddDbContext<WishContext>(opt => 
-                opt.UseNpgsql(TempHerokuConnString()));
+                opt.UseNpgsql(connectionString));
             services.AddControllers();
             services.AddScoped<IWishRepository, PGSqlWishRepository>();
             services.AddScoped<IUserRepository, MockUserRepository>();
@@ -72,9 +71,5 @@ namespace WishAPI
             return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
         }
 
-        private static string TempHerokuConnString()
-        {
-            return $"User ID=jzkeyzjyzfokji;Password=7dd7ed1abc1f37c3a0404f97c7112f531fb9bf951f711dfa89c296aaac6e62cf;Host=ec2-35-153-114-74.compute-1.amazonaws.com;Port=5432;Database=d4cqk75d5tbrlg;Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
-        }
     }
 }
