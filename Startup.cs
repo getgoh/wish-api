@@ -27,10 +27,10 @@ namespace WishAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<WishContext>(opt => opt.UseSqlServer
-                (Configuration.GetConnectionString("WishConnection")));
+            services.AddEntityFrameworkNpgsql().AddDbContext<WishContext>(opt => 
+                opt.UseNpgsql(Configuration.GetConnectionString("WishConnection")));
             services.AddControllers();
-            services.AddScoped<IWishRepository, MockWishRepository>();
+            services.AddScoped<IWishRepository, PGSqlWishRepository>();
             services.AddScoped<IUserRepository, MockUserRepository>();
         }
 

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace WishAPI.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class PGInitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,10 +11,10 @@ namespace WishAPI.Migrations
                 name: "Wishes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(81)", maxLength: 81, nullable: false),
-                    IsClaimed = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(81)", maxLength: 81, nullable: false),
+                    IsClaimed = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
