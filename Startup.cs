@@ -28,13 +28,13 @@ namespace WishAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Connection string for local
-            //var connectionString = Configuration.GetConnectionString("WishConnection");
+            var connectionString = Configuration.GetConnectionString("WishConnection");
 
             // Connection string for Heroku deployment
-            var connectionString = GetHerokuConnectionString();
+            //var connectionString = GetHerokuConnectionString();
 
             services.AddEntityFrameworkNpgsql().AddDbContext<WishContext>(opt => 
-                opt.UseNpgsql(connectionString));
+                opt.UseNpgsql(TempHerokuConnString()));
             services.AddControllers();
             services.AddScoped<IWishRepository, PGSqlWishRepository>();
             services.AddScoped<IUserRepository, MockUserRepository>();
@@ -70,6 +70,11 @@ namespace WishAPI
             string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
             return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
+        }
+
+        private static string TempHerokuConnString()
+        {
+            return $"User ID=jzkeyzjyzfokji;Password=7dd7ed1abc1f37c3a0404f97c7112f531fb9bf951f711dfa89c296aaac6e62cf;Host=ec2-35-153-114-74.compute-1.amazonaws.com;Port=5432;Database=d4cqk75d5tbrlg;Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
         }
     }
 }

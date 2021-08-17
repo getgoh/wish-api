@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace WishAPI.Migrations
 {
-    public partial class PGInitialMigration : Migration
+    public partial class HerokuPGInitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -9,8 +9,8 @@ using WishAPI.Data;
 namespace WishAPI.Migrations
 {
     [DbContext(typeof(WishContext))]
-    [Migration("20210817210930_PG-InitialMigration")]
-    partial class PGInitialMigration
+    [Migration("20210817223510_Heroku-PG-InitialMigration")]
+    partial class HerokuPGInitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
