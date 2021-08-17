@@ -27,8 +27,14 @@ namespace WishAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Connection string for local
+            //var connectionString = Configuration.GetConnectionString("WishConnection");
+
+            // Connection string for Heroku deployment
+            var connectionString = GetHerokuConnectionString();
+
             services.AddEntityFrameworkNpgsql().AddDbContext<WishContext>(opt => 
-                opt.UseNpgsql(Configuration.GetConnectionString("WishConnection")));
+                opt.UseNpgsql(connectionString));
             services.AddControllers();
             services.AddScoped<IWishRepository, PGSqlWishRepository>();
             services.AddScoped<IUserRepository, MockUserRepository>();
@@ -52,6 +58,18 @@ namespace WishAPI
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static string GetHerokuConnectionString()
+        {
+            string connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+            var databaseUri = new Uri(connectionUrl);
+
+            string db = databaseUri.LocalPath.TrimStart('/');
+            string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
+
+            return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
         }
     }
 }
