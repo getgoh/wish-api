@@ -27,10 +27,15 @@ namespace WishAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<WishContext>(opt => opt.UseSqlServer
-                (Configuration.GetConnectionString("WishConnection")));
+            var IsDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
+            var connectionString = IsDevelopment ? Configuration.GetConnectionString("WishConnection") : GetHerokuConnectionString();
+
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<WishContext>(opt => 
+                opt.UseNpgsql(connectionString));
             services.AddControllers();
-            services.AddScoped<IWishRepository, MockWishRepository>();
+            services.AddScoped<IWishRepository, PGSqlWishRepository>();
             services.AddScoped<IUserRepository, MockUserRepository>();
         }
 
@@ -53,5 +58,18 @@ namespace WishAPI
                 endpoints.MapControllers();
             });
         }
+
+        private static string GetHerokuConnectionString()
+        {
+            string connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+            var databaseUri = new Uri(connectionUrl);
+
+            string db = databaseUri.LocalPath.TrimStart('/');
+            string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
+
+            return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
+        }
+
     }
 }
